@@ -10,12 +10,16 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, current_user, login_required
 from app.forms import LoginForm
 from app.models import UserProfile
-import werkzeug.security
+from werkzeug.security import check_password_hash
 
 
 ###
 # Routing for your application.
 ###
+@app.route('/secure-page')
+@login_required
+def secure_page():
+	return render_template('secure_page.html')
 
 @app.route('/')
 def home():
@@ -34,15 +38,15 @@ def login():
     form = LoginForm()
     if request.method == "POST" and form.validate_on_submit():
         if form.username.data and form.password.data:
-			username = form.username.data
-			password = form.password.data
-			user = UserProfile.query.filter_by(username=username).first()
-			if user is not None and check_password_hash(user.password, password):
-				login_user(user)
-				flash("Login Succesful","Success")
-				return redirect(url_for("secure_page"))
-			else:
-				flash("Error.")
+            username = form.username.data
+            password = form.password.data
+            user = UserProfile.query.filter_by(username=username).first()
+            if user is not None and check_password_hash(user.password, password):
+                login_user(user)
+                flash("Login Successful","Success")
+                return redirect(url_for("secure_page"))
+            else:
+                flash("Error.")
     return render_template("login.html", form=form)
 
 
