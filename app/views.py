@@ -16,6 +16,13 @@ from werkzeug.security import check_password_hash
 ###
 # Routing for your application.
 ###
+@app.route('/logout')
+@login_required
+def logout():
+	logout_user()
+	flash("You have been logged out.")
+	return render_template('home.html')
+
 @app.route('/secure-page')
 @login_required
 def secure_page():
